@@ -1,5 +1,5 @@
 <?php
-require_once APP_ROOT . '/includes/config.php';
+require_once __DIR__ . '/includes/config.php';
 
 class Database {
     private static $instance = null;

@@ -1,5 +1,7 @@
 <?php
-require_once APP_ROOT . '/includes/config.php';
+
+require_once __DIR__ . '/../includes/config.php';
+require_once APP_ROOT . '/classes/Database.php';
 require_once APP_ROOT . '/classes/Medidor.php';
 
 try {

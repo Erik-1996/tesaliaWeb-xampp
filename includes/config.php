@@ -1,19 +1,19 @@
 <?php
 // Configuración de entorno
-define('ENVIRONMENT', 'development'); // 'production' en entorno real
+define('ENVIRONMENT', 'development');
 
-// Configuración de la base de datos
+// Configuración de rutas (CORREGIDO)
+define('APP_ROOT', dirname(__DIR__)); // Ahora apunta a la raíz del proyecto
+define('BASE_URL', 'http://' . $_SERVER['HTTP_HOST'] . str_replace($_SERVER['DOCUMENT_ROOT'], '', APP_ROOT));
+
+// Resto de tu configuración...
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root'); // Cambiar en producción
-define('DB_PASS', '');     // Cambiar en producción
+define('DB_USER', 'root');
+define('DB_PASS', '');
 define('DB_NAME', 'data_energia');
 define('DB_CHARSET', 'utf8mb4');
 
-// Configuración de seguridad
-define('APP_ROOT', dirname(dirname(__FILE__)));
-define('BASE_URL', 'http://10.10.23.25/tesaliaWeb-xampp/public');
-
-// Mostrar errores sólo en desarrollo
+// Configuración de errores
 if (ENVIRONMENT === 'development') {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
