@@ -1,13 +1,42 @@
-<?php require_once '../includes/config.php'; ?>
-<?php require_once '../includes/header.php'; ?>
+<?php
+require_once APP_ROOT . '/includes/config.php';
+require_once APP_ROOT . '/classes/Medidor.php';
 
-<div class="container">
-    <h1 class="mt-5"><?php echo SITE_NAME; ?></h1>
-    <p class="lead">Sistema de monitoreo de energía eléctrica</p>
+try {
+    $medidorModel = new Medidor();
+    $medidores = $medidorModel->getAllMedidores();
+} catch (Exception $e) {
+    $error = $e->getMessage();
+}
+
+require_once APP_ROOT . '/includes/header.php';
+?>
+
+<div class="container mt-5">
+    <h1 class="mb-4">Monitor de Energía Tesalia</h1>
     
-    <div id="medidores-container" class="row">
-        <!-- Los medidores se cargarán aquí via JavaScript -->
+    <?php if (isset($error)): ?>
+        <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
+    <?php endif; ?>
+    
+    <div class="row">
+        <?php foreach ($medidores as $medidor): ?>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><?php echo htmlspecialchars($medidor['nombre']); ?></h5>
+                        <p class="card-text">
+                            <strong>Ubicación:</strong> <?php echo htmlspecialchars($medidor['ubicacion']); ?><br>
+                            <strong>ID:</strong> <?php echo htmlspecialchars($medidor['id']); ?>
+                        </p>
+                        <a href="medidores/detalle.php?id=<?php echo $medidor['id']; ?>" class="btn btn-primary">
+                            Ver datos detallados
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </div>
 </div>
 
-<?php require_once '../includes/footer.php'; ?>
+<?php require_once APP_ROOT . '/includes/footer.php'; ?>
