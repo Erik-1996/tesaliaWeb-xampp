@@ -1,44 +1,33 @@
 <?php
-
 require_once dirname(__DIR__) . '/includes/config.php';
-require_once dirname(__DIR__) . '/classes/Database.php';
 require_once dirname(__DIR__) . '/classes/Medidor.php';
 
-try {
-    $medidorModel = new Medidor();
-    $medidores = $medidorModel->getAllMedidores();
-} catch (Exception $e) {
-    $error = $e->getMessage();
-}
-
-require_once APP_ROOT . '/includes/header.php';
+$medidor = new Medidor();
+$tablasMedidores = $medidor->getMedidorTables();
 ?>
 
-<div class="container mt-5">
-    <h1 class="mb-4">Monitor de Energía Tesalia</h1>
-    
-    <?php if (isset($error)): ?>
-        <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
-    <?php endif; ?>
-    
-    <div class="row">
-        <?php foreach ($medidores as $medidor): ?>
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title"><?php echo htmlspecialchars($medidor['nombre']); ?></h5>
-                        <p class="card-text">
-                            <strong>Ubicación:</strong> <?php echo htmlspecialchars($medidor['ubicacion']); ?><br>
-                            <strong>ID:</strong> <?php echo htmlspecialchars($medidor['id']); ?>
-                        </p>
-                        <a href="medidores/detalle.php?id=<?php echo $medidor['id']; ?>" class="btn btn-primary">
-                            Ver datos detallados
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
-</div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medidores Tesalia </title>
 
-<?php require_once APP_ROOT . '/includes/footer.php'; ?>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+    <div id="graphDiv"></div>
+
+
+
+    <!-- Javascript -->
+
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <!-- JS -->
+    <script src="../assets/js/main.js"></script>
+    
+</body>
+</html>
