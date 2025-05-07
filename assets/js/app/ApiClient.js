@@ -1,37 +1,48 @@
-const rand = () => Math.random();
-var x = [1, 2, 3, 4, 5];
-const new_data = (trace) => Object.assign(trace, {y: x.map(rand)});
+/**
+ * Clase base para manejar peticiones HTTP
+ */
+export class ApiClient {
+    constructor(baseUrl = 'http://10.10.23.25/tesaliaWeb-xampp/public/api/') {
+        this.baseUrl = baseUrl;
+    }
 
-// add random data to three line traces
-var data = [
-	{mode:'lines', line: {color: "#b55400"}},
-	{mode: 'lines', line: {color: "#393e46"}},
-	{mode: 'lines', line: {color: "#222831"}}
-].map(new_data);
+    /**
+     * Realiza una petición GET
+     * @param {string} endpoint 
+     * @param {Object} params 
+     * @returns {Promise<Object>}
+     */
+    async get(endpoint, params = {}) {
+        const url = new URL(endpoint, this.baseUrl);
+        
+        // Agregar parámetros a la URL
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                url.searchParams.append(key, value);
+            }
+        });
 
-var layout = {
-	title: {text: 'User Zoom Persists<br>When uirevision Unchanged'},
-	uirevision:'true',
-	xaxis: {autorange: true},
-	yaxis: {autorange: true}
-};
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
 
-Plotly.react('myDiv', data, layout);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-var myPlot = document.getElementById('myDiv');
+        return response.json();
+    }
 
-var cnt = 0;
-var interval = setInterval(function() {
-	data = data.map(new_data);
-
-	// user interaction will mutate layout and set autorange to false
-	// so we need to reset it to true
-	layout.xaxis.autorange = true;
-	layout.yaxis.autorange = true;
-
-	// not changing uirevision will ensure that user interactions are unchanged
-	// layout.uirevision = rand();
-
-	Plotly.react('myDiv', data, layout);
-	if(cnt === 100) clearInterval(interval);
-}, 2500);
+    /**
+     * Maneja errores de la API
+     * @param {Error} error 
+     */
+    handleApiError(error) {
+        console.error('API Error:', error);
+        // Aquí puedes agregar notificaciones al usuario
+        throw error; // Relanzamos para manejo adicional
+    }
+}

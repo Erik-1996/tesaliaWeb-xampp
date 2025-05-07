@@ -1,37 +1,97 @@
-const rand = () => Math.random();
-var x = [1, 2, 3, 4, 5];
-const new_data = (trace) => Object.assign(trace, {y: x.map(rand)});
 
-// add random data to three line traces
-var data = [
-  {mode:'lines', line: {color: "#b55400"}}, 
-  {mode: 'lines', line: {color: "#393e46"}},
-  {mode: 'lines', line: {color: "#222831"}}
-].map(new_data);
+import { TableService } from './app/TableService.js';
 
-var layout = {
-  title: 'User Zoom Persists<br>When uirevision Unchanged',
-  uirevision:'true',
-  xaxis: {autorange: true},
-  yaxis: {autorange: true}
-};
+/**
+ * Clase principal de la aplicación
+ */
+class TesaliaEnergyApp {
+    constructor() {
+        this.tableService = new TableService();
+        this.init();
+    }
 
-Plotly.react(graphDiv, data, layout);
+    async init() {
+        try {
+            // Obtener y mostrar las tablas al cargar la página
+            const tables = await this.tableService.getAllTables();
+            this.displayTables(tables);
+        } catch (error) {
+            this.showError('Error al cargar las tablas', error);
+        }
+    }
 
-var myPlot = document.getElementById('graphDiv');
+    /**
+     * Muestra las tablas en la interfaz
+     * @param {Array<string>} tables 
+     */
+    displayTables(tables) {
+        const container = document.getElementById('tables-container');
+        if (!container) return;
 
-var cnt = 0;
-var interval = setInterval(function() {
-  data = data.map(new_data);
+        container.innerHTML = `
+            <h2>Tablas de Medidores</h2>
+            <ul class="table-list">
+                ${tables.map(table => `
+                    <li class="table-item" data-table="${table}">
+                        ${table}
+                        <button class="btn-show-data" data-table="${table}">
+                            Mostrar datos
+                        </button>
+                    </li>
+                `).join('')}
+            </ul>
+        `;
 
-  // user interation will mutate layout and set autorange to false
-  // so we need to reset it to true
-  layout.xaxis.autorange = true;
-  layout.yaxis.autorange = true;
-  
-  // not changing uirevision will ensure that user interactions are unchanged
-  // layout.uirevision = rand();
-  
-  Plotly.react(graphDiv, data, layout);
-  if(cnt === 100) clearInterval(interval);
-}, 2500);
+        // Agregar event listeners
+        document.querySelectorAll('.btn-show-data').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const tableName = e.target.dataset.table;
+                this.loadTableData(tableName);
+            });
+        });
+    }
+
+    /**
+     * Carga los datos de una tabla específica
+     * @param {string} tableName 
+     */
+    async loadTableData(tableName) {
+        try {
+            console.log(`Cargando datos de: ${tableName}`);
+            const data = await this.tableService.getTableData(tableName);
+            console.log('Datos recibidos:', data);
+            
+            // Aquí procesarías los datos para mostrar
+            this.displayTableData(tableName, data);
+        } catch (error) {
+            this.showError(`Error al cargar datos de ${tableName}`, error);
+        }
+    }
+
+    /**
+     * Muestra los datos de una tabla
+     * @param {string} tableName 
+     * @param {Array} data 
+     */
+    displayTableData(tableName, data) {
+        // Implementar según tus necesidades
+        alert(`Datos de ${tableName} recibidos (consola para detalles)`);
+    }
+
+    /**
+     * Maneja errores de la aplicación
+     * @param {string} message 
+     * @param {Error} error 
+     */
+    showError(message, error) {
+        console.error(`${message}:`, error);
+        // Aquí podrías mostrar una notificación al usuario
+        alert(`${message}. Ver consola para detalles.`);
+    }
+}
+
+// Iniciar la aplicación cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    new TesaliaEnergyApp();
+});
+
